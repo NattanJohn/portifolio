@@ -1,65 +1,147 @@
-import Image from "next/image";
+"use client";
+import { useState, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import BootScreen from "@/components/BootScreen";
+import Dock from "@/components/Dock";
+import Window from "@/components/Window";
+import SkillsWidget from "@/components/widgets/SkillsWidget";
+import TerminalWidget from "@/components/widgets/TerminalWidget";
+import ExperienceWidget from "@/components/widgets/ExperienceWidget";
+import ContactWidget from "@/components/widgets/ContactsWidget";
+import ProjectsWidget from "@/components/widgets/ProjectWidget";
+
+type WindowApp = {
+  id: string;
+  title: string;
+  component: React.ReactNode;
+};
 
 export default function Home() {
+  const [isBooting, setIsBooting] = useState(true);
+  const [openWindows, setOpenWindows] = useState<WindowApp[]>([]);
+  const [activeWindow, setActiveWindow] = useState<string | null>(null);
+
+  // Referência para limitar o movimento das janelas
+  const desktopRef = useRef<HTMLDivElement>(null);
+
+  const openApp = (id: string) => {
+    if (openWindows.find((w) => w.id === id)) {
+      setActiveWindow(id);
+      return;
+    }
+
+    let title = "";
+    let component: React.ReactNode = null;
+
+    switch (id) {
+      case "about":
+        title = "MY_PROFILE";
+        component = <SkillsWidget />;
+        break;
+      case "terminal":
+        title = "SYSTEM_TERMINAL";
+        component = <TerminalWidget />;
+        break;
+      case "experience":
+        title = "WORK_HISTORY.EXE";
+        component = <ExperienceWidget />;
+        break;
+      case "projects":
+        title = "PROJECT_FILES.LOG";
+        component = <ProjectsWidget />;
+        break;
+      case "contact":
+        title = "COMMS_CHANNEL.SYS";
+        component = <ContactWidget />;
+        break;
+    }
+
+    if (component) {
+      setOpenWindows((prev) => [...prev, { id, title, component }]);
+      setActiveWindow(id);
+    }
+  };
+
+  const closeApp = (id: string) => {
+    setOpenWindows((prev) => prev.filter((w) => w.id !== id));
+    if (activeWindow === id) setActiveWindow(null);
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <main className="relative h-screen w-screen overflow-hidden bg-[#0d0221] crt-effect">
+      <AnimatePresence mode="wait">
+        {isBooting ? (
+          <BootScreen key="boot" onComplete={() => setIsBooting(false)} />
+        ) : (
+          <motion.div
+            key="desktop"
+            ref={desktopRef}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="relative h-full w-full"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+            <div className="retro-grid" />
+
+            {/* Header */}
+            <header className="p-8 flex justify-between items-start z-10 relative pointer-events-none">
+              <div className="pointer-events-auto">
+                <h1 className="text-4xl font-black text-pink-500 italic tracking-tighter drop-shadow-[4px_4px_0px_rgba(0,242,255,0.7)]">
+                  NATTAN_OS
+                </h1>
+                <p className="text-cyan-300 font-mono text-sm opacity-80 uppercase tracking-widest">
+                  System Status: Online | Buffer: 40% Optimized
+                </p>
+              </div>
+              <div className="text-right font-mono text-xs text-pink-400 hidden md:block">
+                <p>LOC: MATINHOS_PR</p>
+                <p>IP: 127.0.0.1</p>
+                <p>KERNEL: R_T_N_STACK</p>
+              </div>
+            </header>
+
+            {/* Windows Layer */}
+            <AnimatePresence>
+              {openWindows.map((win, idx) => (
+                <Window
+                  key={win.id}
+                  title={win.title}
+                  index={idx}
+                  isFocused={activeWindow === win.id}
+                  onFocus={() => setActiveWindow(win.id)}
+                  onClose={() => closeApp(win.id)}
+                  dragConstraints={desktopRef}
+                >
+                  {win.component}
+                </Window>
+              ))}
+            </AnimatePresence>
+
+            {/* Empty State */}
+            {openWindows.length === 0 && (
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: [0.1, 0.4, 0.1] }}
+                  transition={{ repeat: Infinity, duration: 3 }}
+                  className="text-cyan-500 font-mono uppercase tracking-[0.5em] text-xl"
+                >
+                  System Idle...
+                </motion.p>
+              </div>
+            )}
+
+            <Dock onSelectItem={openApp} />
+
+            <div className="fixed bottom-4 right-6 text-[10px] font-mono text-pink-500/50 hidden md:block">
+              LATENCY: 0.4s | OPTIMIZATION_LEVEL: 40%
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Overlay Effects */}
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.4)_100%)] z-50" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.1)_50%)] bg-size-[100%_4px] z-50" />
+    </main>
   );
 }

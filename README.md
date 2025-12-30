@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Getting Started
 
-First, run the development server:
+# nattan-os
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# EM CONSTRUÇÃO
+
+Portfólio interativo, inspirado em um sistema operacional fictício, moderno e responsivo. Desenvolvido com Next.js, React e Framer Motion, une criatividade, tecnologia e personalidade em uma experiência única.
+
+
+## ✨ Funcionalidades
+- Janelas flutuantes com drag, resize e maximização
+- Widgets customizados (Terminal, Skills, Projetos, etc)
+- Animações suaves com Framer Motion
+- Design responsivo (desktop e mobile)
+- Efeitos visuais modernos (blur, neon, etc)
+- Apresentação de habilidades, projetos e contato de forma criativa
+
+## 🚀 Rodando localmente
+
+1. Instale as dependências:
+	 ```bash
+	 npm install
+	 # ou
+	 yarn install
+	 ```
+2. Inicie o servidor de desenvolvimento:
+	 ```bash
+	 npm run dev
+	 # ou
+	 yarn dev
+	 ```
+3. Acesse [http://localhost:3000](http://localhost:3000)
+
+## 🛠️ Estrutura do Projeto
+```
+public/
+	sounds/           # Efeitos sonoros do sistema
+src/
+	app/              # Páginas e layout principal
+	components/       # Componentes de UI (Window, Dock, etc)
+		widgets/        # Widgets customizados
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 📦 Tecnologias
+- [Next.js](https://nextjs.org/)
+- [React](https://react.dev/)
+- [Framer Motion](https://www.framer.com/motion/)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Lucide Icons](https://lucide.dev/)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 💡 Personalização
+- Edite os widgets em `src/components/widgets/`
+- Adicione novos apps/janelas em `src/components/`
+- Modifique o layout em `src/app/layout.tsx`
+- Adapte para seu próprio portfólio facilmente!
 
-## Learn More
+## 📄 Licença
+MIT
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+Desenvolvido e idealizado por [Nattan](https://github.com/seu-usuario) com ♥️
