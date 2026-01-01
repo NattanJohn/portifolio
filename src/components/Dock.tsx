@@ -5,20 +5,24 @@ import {
   Code2, 
   Terminal as TerminalIcon, 
   Briefcase, 
-  MessageSquare 
+  MessageSquare, 
+  Trophy
 } from "lucide-react";
 import useSound from "use-sound";
+import { useTheme } from "@/context/ThemeContext";
 
 const menuItems = [
-  { id: "about", icon: <User size={24} />, label: "Sobre" },
-  { id: "experience", icon: <Briefcase size={24} />, label: "Experiência" },
-  { id: "projects", icon: <Code2 size={24} />, label: "Projetos" },
-  { id: "terminal", icon: <TerminalIcon size={24} />, label: "Terminal" },
-  { id: "contact", icon: <MessageSquare size={24} />, label: "Contato" },
+  { id: "about", icon: <User size={22} />, label: "Sobre" },
+  { id: "experience", icon: <Briefcase size={22} />, label: "Experiência" },
+  { id: "projects", icon: <Code2 size={22} />, label: "Projetos" },
+  { id: "terminal", icon: <TerminalIcon size={22} />, label: "Terminal" },
+  { id: "contact", icon: <MessageSquare size={22} />, label: "Contato" },
+  { id: "achievements", icon: < Trophy  size={22} />, label: "Conquistas" },
 ];
 
 export default function Dock({ onSelectItem }: { onSelectItem: (id: string) => void }) {
-  // Som de clique estilo retrô
+  const { theme } = useTheme();
+  console.log(theme);
   const [playClick] = useSound("/sounds/click.mp3", { 
     volume: 0.4,
     playbackRate: 1.2 
@@ -28,42 +32,68 @@ export default function Dock({ onSelectItem }: { onSelectItem: (id: string) => v
     try {
       playClick(); 
     } catch (e) {
-      console.log("Som ainda não carregado ou bloqueado pelo browser", e);
+      console.log("Audio block by browser", e);
     }
     onSelectItem(id); 
   };
 
   return (
-    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50">
+    <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-200">
       <motion.div 
         initial={{ y: 100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        transition={{ type: "spring", damping: 15 }}
-        className="flex items-center gap-4 px-6 py-3 bg-black/60 backdrop-blur-xl border border-pink-500/50 rounded-2xl shadow-[0_0_30px_rgba(255,0,255,0.15)]"
+        transition={{ type: "spring", damping: 18, stiffness: 120 }}
+        style={{ 
+          borderColor: "var(--accent-color)",
+          boxShadow: "0 0 25px var(--accent-shadow), inset 0 0 10px var(--accent-shadow)" 
+        }}
+        className="flex items-center gap-2 md:gap-4 px-4 md:px-6 py-2 bg-[#0a0a0f]/80 backdrop-blur-2xl border-2 rounded-2xl transition-all duration-500"
       >
         {menuItems.map((item) => (
           <motion.button
             key={item.id}
             whileHover={{ 
-              scale: 1.3, 
-              y: -10,
-              color: "#00f2ff",
+              scale: 1.2, 
+              y: -8,
             }}
             whileTap={{ scale: 0.9 }}
             onClick={() => handleClick(item.id)}
-            className="relative group p-3 text-pink-500 transition-colors flex flex-col items-center outline-none"
+            style={{ color: "var(--accent-color)" }}
+            className="relative group p-3 transition-all flex flex-col items-center outline-none"
           >
-            <div className="group-hover:drop-shadow-[0_0_8px_rgba(0,242,255,0.8)]">
+            {/* Ícone com brilho no hover */}
+            <div className="relative z-10 group-hover:drop-shadow-[0_0_8px_var(--accent-color)] transition-all duration-300">
               {item.icon}
             </div>
-            
-            <span className="absolute -top-12 left-1/2 -translate-x-1/2 bg-pink-600 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-all uppercase font-mono border border-pink-400 shadow-[0_0_10px_rgba(255,0,0,0.5)] pointer-events-none whitespace-nowrap">
+
+            {/* Tooltip Estilizada */}
+            <span 
+              style={{ 
+                backgroundColor: "var(--accent-color)",
+                boxShadow: "0 0 15px var(--accent-shadow)"
+              }}
+              className="absolute -top-14 left-1/2 -translate-x-1/2 text-white text-[9px] px-2 py-1.5 rounded-sm opacity-0 group-hover:opacity-100 transition-all uppercase font-mono pointer-events-none whitespace-nowrap z-60 border border-white/20"
+            >
               {item.label}.EXE
+              <div 
+                style={{ borderTopColor: "var(--accent-color)" }}
+                className="absolute top-full left-1/2 -translate-x-1/2 border-x-[5px] border-x-transparent border-t-[5px]"
+              />
             </span>
 
+            {/* Indicador de Status (Ponto luminoso) */}
             <motion.div 
-              layoutId={`indicator-${item.id}`}
-              className="w-1 h-1 bg-cyan-400 rounded-full mt-1 opacity-40 group-hover:opacity-100 shadow-[0_0_5px_#00f2ff]" 
+              style={{ 
+                backgroundColor: "var(--accent-color)",
+                boxShadow: "0 0 10px var(--accent-color)"
+              }}
+              className="w-1 h-1 rounded-full mt-1.5 opacity-20 group-hover:opacity-100 transition-all duration-300" 
+            />
+
+            {/* Reflexo de fundo no Hover */}
+            <div 
+              style={{ backgroundColor: "var(--accent-color)" }}
+              className="absolute inset-0 opacity-0 group-hover:opacity-5 rounded-xl transition-opacity duration-300"
             />
           </motion.button>
         ))}

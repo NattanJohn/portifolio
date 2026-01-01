@@ -26,7 +26,6 @@ export default function Window({
   const [isMaximized, setIsMaximized] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   
-  // Sons do Sistema
   const [playClick] = useSound("/sounds/click.mp3", { volume: 0.4 });
   const [playClose] = useSound("/sounds/click.mp3", { volume: 0.3, playbackRate: 0.8 });
   const [playMaximize] = useSound("/sounds/click.mp3", { volume: 0.4, playbackRate: 1.2 });
@@ -41,26 +40,23 @@ export default function Window({
     return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  const offset = useMemo(() => (isMobile ? 0 : index * 30), [index, isMobile]);
+  const offset = useMemo(() => (isMobile ? 0 : index * 25), [index, isMobile]);
 
   const windowVariants: Variants = {
     normal: {
       width: isMobile ? "100%" : "600px",
       height: isMobile ? "calc(100vh - 180px)" : "450px",
-      top: isMobile ? 70 : 150 + offset, 
+      top: isMobile ? 70 : 120 + offset, 
       left: isMobile ? 0 : `calc(50% - 300px + ${offset}px)`,
-      x: 0,
-      y: 0,
-      opacity: 1,
+      x: 0, y: 0, opacity: 1,
+      scale: 1
     },
     maximized: {
       width: "100%", 
       height: isMobile ? "calc(100vh - 180px)" : "calc(100vh - 200px)", 
       top: isMobile ? 70 : 90, 
-      left: 0,
-      x: 0,
-      y: 0,
-      opacity: 1,
+      left: 0, x: 0, y: 0, opacity: 1,
+      scale: 1
     },
   };
 
@@ -68,8 +64,7 @@ export default function Window({
     e.stopPropagation();
     if (isMobile) return;
     playMaximize();
-    x.set(0);
-    y.set(0);
+    x.set(0); y.set(0);
     setIsMaximized(!isMaximized);
   };
 
@@ -80,74 +75,88 @@ export default function Window({
   };
 
   const handleFocus = () => {
-    if (!isFocused) {
-      playClick();
-    }
+    if (!isFocused) playClick();
     onFocus();
+  };
+
+  const dynamicStyles = {
+    borderColor: isFocused ? "var(--accent-color)" : "rgba(255,255,255,0.05)",
+    boxShadow: isFocused ? `0 0 30px var(--accent-shadow)` : "none",
+  };
+
+  const headerStyles = {
+    backgroundColor: isFocused ? "var(--accent-color)" : "rgba(255,255,255,0.03)",
+    borderColor: isFocused ? "var(--accent-color)" : "rgba(255,255,255,0.1)",
   };
 
   return (
     <motion.div
       onMouseDown={handleFocus}
       style={{ 
-        x, 
-        y, 
-        backdropFilter: "blur(15px)",
-        zIndex: isFocused ? 100 : 30 + index,
+        x, y, 
+        backdropFilter: "blur(20px)",
+        zIndex: isFocused ? 1000 : 30 + index,
         position: "fixed",
+        ...dynamicStyles
       }}
-      
       drag={!isMaximized && !isMobile}
       dragMomentum={false}
       dragConstraints={dragConstraints} 
       dragElastic={0} 
-
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, scale: 0.9, y: 20 }}
       animate={(isMaximized || isMobile) ? "maximized" : "normal"}
       variants={windowVariants}
-      exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ type: "spring", stiffness: 350, damping: 35 }}
-      
-      className={`bg-[#1a1a2e]/95 border-2 flex flex-col shadow-2xl overflow-hidden box-border
-        ${isFocused ? "border-cyan-400 shadow-[0_0_50px_rgba(0,255,255,0.15)]" : "border-pink-500/20"}
-        ${(isMaximized || isMobile) ? "rounded-none" : "rounded-sm"}
+      exit={{ opacity: 0, scale: 0.9, y: 10 }}
+      transition={{ type: "spring", stiffness: 450, damping: 40 }}
+      className={`bg-[#050508]/90 border-2 flex flex-col shadow-2xl overflow-hidden box-border transition-[border-color,box-shadow] duration-500
+        ${(isMaximized || isMobile) ? "rounded-none" : "rounded-lg"}
       `}
     >
       <div 
-        className={`p-3 flex justify-between items-center select-none shrink-0 border-b
-        ${!isMobile && !isMaximized ? "cursor-grab active:cursor-grabbing" : ""}
-        ${isFocused ? "bg-cyan-600/90 border-cyan-400" : "bg-pink-900/40 border-pink-500/10"}`}
+        style={headerStyles}
+        className={`p-3 flex justify-between items-center select-none shrink-0 border-b transition-all duration-500
+        ${!isMobile && !isMaximized ? "cursor-grab active:cursor-grabbing" : ""}`}
       >
         <div className="flex items-center gap-2 ml-1">
-          <div className={`w-1.5 h-1.5 rounded-full ${isFocused ? "bg-white shadow-[0_0_8px_#fff]" : "bg-pink-500/30"}`} />
-          <span className="font-mono text-[10px] md:text-xs font-bold uppercase tracking-widest text-white">
-            {title}.SYS
+          <div 
+            style={{ backgroundColor: isFocused ? "#fff" : "var(--accent-color)" }}
+            className={`w-1.5 h-1.5 rounded-full transition-colors ${isFocused ? "shadow-[0_0_8px_#fff]" : ""}`} 
+          />
+          <span className="font-mono text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] text-white">
+            {title}
           </span>
         </div>
 
         <div className="flex gap-4 px-2">
           {!isMobile && (
-            <button onClick={handleToggleMaximize} className="hover:scale-110 transition-transform outline-none">
+            <button onClick={handleToggleMaximize} className="hover:scale-110 transition-transform opacity-60 hover:opacity-100">
               {isMaximized ? <Copy size={14} className="text-white" /> : <Square size={14} className="text-white" />}
             </button>
           )}
-          <X size={20} className="text-white hover:text-red-500 cursor-pointer transition-colors" onClick={handleClose} />
+          <X size={20} className="text-white opacity-60 hover:opacity-100 hover:text-red-500 cursor-pointer transition-all" onClick={handleClose} />
         </div>
       </div>
 
       <div className="relative grow overflow-hidden bg-black/20">
-        <div className="absolute inset-0 overflow-y-auto custom-scrollbar p-4 md:p-6 font-mono text-cyan-100/80 text-xs md:text-sm">
+        <div className="absolute inset-0 overflow-y-auto custom-scrollbar p-4 md:p-6 font-mono text-white/80 text-xs md:text-sm">
           {children}
         </div>
       </div>
 
-      <div className={`px-3 py-1 flex justify-between items-center shrink-0 border-t text-[9px] font-mono
-        ${isFocused ? "bg-cyan-900/20 text-cyan-500/60" : "bg-black/20 text-pink-500/20"}`}>
-        <div className="flex gap-3">
-          <span>INDEX: {index}</span>
-          <span className="hidden md:inline">SYSTEM: STABLE</span>
+      <div 
+        style={{ borderTopColor: isFocused ? "var(--accent-color)" : "rgba(255,255,255,0.05)" }}
+        className="px-3 py-1 flex justify-between items-center shrink-0 border-t text-[9px] font-mono bg-black/40 transition-colors duration-500"
+      >
+        <div className="flex gap-3 text-white/30 uppercase">
+          <span>ID: {index}</span>
+          <span className="hidden md:inline">Status: {isFocused ? "Active" : "Standby"}</span>
         </div>
-        <span className="tracking-widest animate-pulse uppercase">● ONLINE</span>
+        <span 
+          style={{ color: isFocused ? "var(--accent-color)" : "rgba(255,255,255,0.2)" }}
+          className={`tracking-widest uppercase font-bold transition-colors ${isFocused ? "animate-pulse" : ""}`}
+        >
+          ● {isFocused ? "Online" : "Idle"}
+        </span>
       </div>
     </motion.div>
   );

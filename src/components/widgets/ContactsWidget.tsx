@@ -1,85 +1,123 @@
 "use client";
 import { motion } from "framer-motion";
-import { Mail, Linkedin, Github, MapPin, Phone } from "lucide-react";
+import { Mail, Linkedin, Github, MapPin, Phone, Share2 } from "lucide-react";
+import { useTheme } from "@/context/ThemeContext";
+import { useAchievements } from "@/context/AchievementContext";
 
 export default function ContactWidget() {
+  const { theme } = useTheme();
+  const { unlockAchievement } = useAchievements();
+
+  const handleLinkClick = () => {
+    unlockAchievement("contact");
+};
+
   const contacts = [
     {
       label: "EMAIL_SERVER",
       value: "nattanjhon123@gmail.com",
       link: "mailto:nattanjhon123@gmail.com",
       icon: <Mail size={16} />,
-      color: "text-pink-500",
     },
     {
       label: "LINKEDIN_STATION",
       value: "linkedin.com/in/nattan-john",
       link: "https://www.linkedin.com/in/nattan-john",
       icon: <Linkedin size={16} />,
-      color: "text-cyan-400",
     },
     {
       label: "GITHUB_NODE",
       value: "github.com/NattanJohn",
       link: "https://github.com/NattanJohn",
       icon: <Github size={16} />,
-      color: "text-purple-500",
     },
   ];
 
   return (
-    <div className="space-y-6 font-mono italic">
-      <div className="text-center space-y-2">
-        <h3 className="text-pink-500 font-bold uppercase tracking-[0.3em] text-lg">
+    <div className="space-y-6 font-mono italic select-none">
+      <div className="text-center space-y-2 mb-8">
+        <motion.h3 
+          style={{ color: "var(--accent-color)", textShadow: "0 0 10px var(--accent-shadow)" }}
+          className="font-bold uppercase tracking-[0.3em] text-sm md:text-lg transition-all duration-500"
+        >
           {" > "} ESTABLISHING_CONNECTION
-        </h3>
-        <p className="text-[10px] text-cyan-500/60 animate-pulse">
-          ENCRYPTING_CHANNEL_AES_256... READY.
-        </p>
+        </motion.h3>
+        <div className="flex items-center justify-center gap-2">
+          <span className="relative flex h-2 w-2">
+            <span style={{ backgroundColor: "var(--accent-color)" }} className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"></span>
+            <span style={{ backgroundColor: "var(--accent-color)" }} className="relative inline-flex rounded-full h-2 w-2"></span>
+          </span>
+          <p className="text-[10px] text-white/40 uppercase tracking-widest">
+            ENCRYPTING_CHANNEL_AES_256... <span style={{ color: "var(--accent-color)" }}>READY.</span>
+          </p>
+        </div>
       </div>
 
-      <div className="grid gap-4">
+      <div className="grid gap-3">
         {contacts.map((contact, idx) => (
           <motion.a
             key={idx}
             href={contact.link}
             target="_blank"
             rel="noopener noreferrer"
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.1 }}
-            className={`flex items-center gap-4 p-3 border border-pink-500/20 bg-black/40 hover:bg-pink-500/5 hover:border-pink-500/60 transition-all group`}
+            onClick={() => handleLinkClick()}
+            style={{ 
+              borderColor: "rgba(255,255,255,0.1)",
+              backgroundColor: "rgba(255,255,255,0.02)" 
+            }}
+            className="flex items-center gap-4 p-4 border group transition-all relative overflow-hidden"
           >
-            <div className={`${contact.color} group-hover:scale-110 transition-transform`}>
+            <div 
+              style={{ color: "var(--accent-color)" }}
+              className="group-hover:scale-110 group-hover:drop-shadow-[0_0_8px_var(--accent-color)] transition-all relative z-10"
+            >
               {contact.icon}
             </div>
-            <div className="flex flex-col">
-              <span className="text-[9px] text-pink-500/50 uppercase font-bold">
+
+            <div className="flex flex-col relative z-10">
+              <span 
+                style={{ color: "var(--accent-color)" }}
+                className="text-[9px] uppercase font-bold opacity-60 group-hover:opacity-100 transition-opacity"
+              >
                 {contact.label}
               </span>
-              <span className="text-xs text-cyan-100 group-hover:text-cyan-400 transition-colors">
+              <span className="text-xs text-white/80 group-hover:text-white transition-colors">
                 {contact.value}
               </span>
             </div>
+
+            <div 
+              style={{ backgroundColor: "var(--accent-color)" }}
+              className="absolute inset-0 opacity-0 group-hover:opacity-[0.05] transition-opacity duration-300"
+            />
           </motion.a>
         ))}
       </div>
 
-      <div className="mt-6 p-4 border-t border-pink-500/10 grid grid-cols-2 gap-2 text-[10px]">
-        <div className="flex items-center gap-2 text-pink-500/70">
-          <MapPin size={12} />
-          <span>LOC: MATINHOS_PR</span>
+      <div className="mt-8 pt-6 border-t border-white/5 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="flex items-center gap-3 text-[10px] text-white/50">
+          <MapPin size={14} style={{ color: "var(--accent-color)" }} />
+          <span className="tracking-tighter">LOC: <span className="text-white/80">MATINHOS_PR [BR]</span></span>
         </div>
-        <div className="flex items-center gap-2 text-pink-500/70">
-          <Phone size={12} />
-          <span>COMMS: +55 (41) 99771-8248</span>
+        <div className="flex items-center gap-3 text-[10px] text-white/50">
+          <Phone size={14} style={{ color: "var(--accent-color)" }} />
+          <span className="tracking-tighter">COMMS: <span className="text-white/80">+55 41 99771-8248</span></span>
         </div>
       </div>
 
-      <div className="bg-cyan-500/5 p-3 border border-cyan-500/10 rounded-sm">
-        <p className="text-[9px] text-cyan-400/80 leading-tight">
-          NOTA: O sistema está operando em baixa latência. 
-          Sinta-se à vontade para enviar um ping via e-mail para discussões de projeto ou colaboração.
+      <div 
+        style={{ borderColor: "var(--accent-color)", backgroundColor: "rgba(255,255,255,0.02)" }}
+        className="mt-6 p-4 border-l-2 relative"
+      >
+        <div className="absolute top-2 right-2 opacity-20">
+          <Share2 size={12} style={{ color: "var(--accent-color)" }} />
+        </div>
+        <p className="text-[10px] text-white/60 leading-relaxed not-italic">
+          <span style={{ color: "var(--accent-color)" }} className="font-bold uppercase mr-1">System_Note:</span> 
+          O kernel está operando em baixa latência. Sinta-se à vontade para enviar um {"ping"} via e-mail para propostas de recrutamento ou colaborações técnicas.
         </p>
       </div>
     </div>

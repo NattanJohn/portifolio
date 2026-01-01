@@ -1,7 +1,11 @@
 "use client";
 import { motion } from "framer-motion";
+import { useTheme } from "@/context/ThemeContext";
 
 export default function SkillsWidget() {
+  const { theme } = useTheme();
+  console.log(theme);
+
   const skills = [
     { name: "TypeScript", level: "90%" },
     { name: "React / Next.js", level: "95%" },
@@ -11,35 +15,54 @@ export default function SkillsWidget() {
     { name: "Docker", level: "75%" },
   ];
 
+  const sectionHeaderStyle = {
+    color: "var(--accent-color)",
+    borderBottomColor: "rgba(255, 255, 255, 0.1)",
+  };
+
   return (
-    <div className="space-y-6 text-cyan-100/90 font-mono italic">
+    <div className="space-y-6 font-mono italic">
       <section>
-        <h3 className="text-pink-500 font-bold border-b border-pink-500/30 mb-2 uppercase tracking-tighter">
+        <h3 
+          style={sectionHeaderStyle}
+          className="font-bold border-b mb-3 uppercase tracking-tighter text-xs md:text-sm transition-colors duration-500"
+        >
           {">"} RESUMO_SISTEMA
         </h3>
-        <p className="text-[11px] leading-relaxed">
-          Desenvolvedor Full-Stack com experiência sólida na criação de soluções web escaláveis, atuando de ponta a ponta[cite: 6]. 
-          Especialista em interfaces performáticas e APIs robustas, focado em performance, usabilidade e entrega de valor[cite: 7, 9].
+        <p className="text-[11px] leading-relaxed text-white/70 not-italic">
+          Desenvolvedor Full-Stack com experiência sólida na criação de soluções web escaláveis. 
+          Especialista em interfaces performáticas e APIs robustas, focado em performance e usabilidade.
         </p>
       </section>
 
       <section>
-        <h3 className="text-pink-500 font-bold border-b border-pink-500/30 mb-3 uppercase tracking-tighter">
+        <h3 
+          style={sectionHeaderStyle}
+          className="font-bold border-b mb-4 uppercase tracking-tighter text-xs md:text-sm transition-colors duration-500"
+        >
           {">"} HARDWARE_CAPABILITIES
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
           {skills.map((skill) => (
-            <div key={skill.name} className="space-y-1">
-              <div className="flex justify-between text-[10px] uppercase tracking-widest">
+            <div key={skill.name} className="space-y-1.5 group">
+              <div className="flex justify-between text-[10px] uppercase tracking-widest text-white/50 group-hover:text-white transition-colors">
                 <span>{skill.name}</span>
-                <span className="text-pink-400">{skill.level}</span>
+                <span style={{ color: "var(--accent-color)" }}>{skill.level}</span>
               </div>
-              <div className="h-1.5 bg-pink-500/10 rounded-none overflow-hidden border border-pink-500/20">
+              <div className="h-2 bg-white/5 rounded-none overflow-hidden border border-white/10 relative">
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: skill.level }}
-                  transition={{ duration: 1.5, ease: "easeOut" }}
-                  className="h-full bg-cyan-400 shadow-[0_0_10px_#22d3ee]"
+                  transition={{ duration: 1.5, ease: "circOut", delay: 0.2 }}
+                  style={{ 
+                    backgroundColor: "var(--accent-color)",
+                    boxShadow: `0 0 10px var(--accent-shadow)` 
+                  }}
+                  className="h-full relative z-10"
+                />
+                <div 
+                   style={{ backgroundColor: "var(--accent-color)" }}
+                   className="absolute inset-0 opacity-5 w-full h-full"
                 />
               </div>
             </div>
@@ -47,22 +70,27 @@ export default function SkillsWidget() {
         </div>
       </section>
 
-      <section className="grid grid-cols-2 gap-4 pt-4 border-t border-pink-500/10">
-        <div>
-          <h4 className="text-[9px] text-pink-500 uppercase font-bold tracking-tighter">Localização</h4>
-          <p className="text-[11px]">Matinhos - PR [cite: 4]</p>
+      <section className="grid grid-cols-2 gap-4 pt-6 border-t border-white/5 not-italic">
+        <div className="space-y-1">
+          <h4 style={{ color: "var(--accent-color)" }} className="text-[9px] uppercase font-bold tracking-tighter opacity-70">Localização</h4>
+          <p className="text-[11px] text-white/80">Matinhos - PR</p>
         </div>
-        <div>
-          <h4 className="text-[9px] text-pink-500 uppercase font-bold tracking-tighter">Educação</h4>
-          <p className="text-[11px]">ADS - Uniavan [cite: 55]</p>
+        <div className="space-y-1">
+          <h4 style={{ color: "var(--accent-color)" }} className="text-[9px] uppercase font-bold tracking-tighter opacity-70">Educação</h4>
+          <p className="text-[11px] text-white/80">ADS - Uniavan</p>
         </div>
-        <div>
-          <h4 className="text-[9px] text-pink-500 uppercase font-bold tracking-tighter">Idiomas</h4>
-          <p className="text-[11px]">Inglês: Intermediário [cite: 63]</p>
+        <div className="space-y-1">
+          <h4 style={{ color: "var(--accent-color)" }} className="text-[9px] uppercase font-bold tracking-tighter opacity-70">Idiomas</h4>
+          <p className="text-[11px] text-white/80">Inglês: Intermediário</p>
         </div>
-        <div>
-          <h4 className="text-[9px] text-pink-500 uppercase font-bold tracking-tighter">Status</h4>
-          <p className="text-[11px] text-cyan-400 animate-pulse">DISPONÍVEL_PARA_PROJETOS</p>
+        <div className="space-y-1">
+          <h4 style={{ color: "var(--accent-color)" }} className="text-[9px] uppercase font-bold tracking-tighter opacity-70">Status</h4>
+          <p 
+            style={{ color: "var(--accent-color)" }} 
+            className="text-[10px] font-bold animate-pulse tracking-tight"
+          >
+            ● DISPONÍVEL_PARA_PROJETOS
+          </p>
         </div>
       </section>
     </div>
