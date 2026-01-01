@@ -1,5 +1,5 @@
 "use client";
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 import useSound from "use-sound";
 
 export type Achievement = {
@@ -9,7 +9,6 @@ export type Achievement = {
   unlocked: boolean;
 };
 
-// Lista mestre de conquistas do NATTAN_OS
 const ALL_ACHIEVEMENTS: Achievement[] = [
   { id: "hacker", title: "HACKER_MAN", desc: "Acessou o núcleo via sudo.", unlocked: false },
   { id: "cv", title: "HEADHUNTER_DETECTED", desc: "Download do firmware NATTAN_CV concluído.", unlocked: false },
@@ -29,45 +28,57 @@ interface AchievementContextType {
 const AchievementContext = createContext<AchievementContextType | null>(null);
 
 export function AchievementProvider({ children }: { children: React.ReactNode }) {
-  const [achievements, setAchievements] = useState<Achievement[]>(() => {
-    const saved = localStorage.getItem("nattan_os_achievements");
-    if (saved) {
-      try {
-        const unlockedIds = JSON.parse(saved) as string[];
-        return ALL_ACHIEVEMENTS.map(ach => ({
-          ...ach,
-          unlocked: unlockedIds.includes(ach.id)
-        }));
-      } catch (e) {
-        console.error("Erro ao carregar conquistas:", e);
-      }
-    }
-    return ALL_ACHIEVEMENTS;
-  });
+  // Inicializamos apenas com a lista padrão para evitar erro de SSR
+  const [achievements, setAchievements] = useState<Achievement[]>(ALL_ACHIEVEMENTS);
 
   const [playSuccess] = useSound("/sounds/achievement.wav", { 
     volume: 0.6,
     interrupt: true
   });
 
+  // Efeito para carregar as conquistas apenas no lado do cliente (Navegador)
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("nattan_os_achievements");
+      if (saved) {
+        try {
+          const unlockedIds = JSON.parse(saved) as string[];
+          setAchievements(prev => prev.map(ach => ({
+            ...ach,
+            unlocked: unlockedIds.includes(ach.id)
+          })));
+        } catch (e) {
+          console.error("Erro ao carregar conquistas:", e);
+        }
+      }
+    }
+  }, []);
+
   const unlockAchievement = (id: string) => {
     setAchievements(prev => {
       const target = prev.find(a => a.id === id);
       
       if (!target || target.unlocked) return prev;
+      
+      // Toca o som de sucesso
       playSuccess();
+
+      // Dispara o evento visual para o Toast
       window.dispatchEvent(new CustomEvent("ACHIEVEMENT_UNLOCKED", { 
         detail: { ...target, unlocked: true } 
       }));
+
       const newState = prev.map(ach => 
         ach.id === id ? { ...ach, unlocked: true } : ach
       );
       
-      const idsToSave = newState
-        .filter(ach => ach.unlocked)
-        .map(ach => ach.id);
-        
-      localStorage.setItem("nattan_os_achievements", JSON.stringify(idsToSave));
+      // Salva no localStorage apenas se estivermos no navegador
+      if (typeof window !== "undefined") {
+        const idsToSave = newState
+          .filter(ach => ach.unlocked)
+          .map(ach => ach.id);
+        localStorage.setItem("nattan_os_achievements", JSON.stringify(idsToSave));
+      }
 
       return newState;
     });
