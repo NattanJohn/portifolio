@@ -20,6 +20,8 @@ import ProjectsWidget from "@/components/widgets/ProjectWidget";
 import MatrixRain from "@/components/MatrixRain";
 import AchievementToast from "@/components/AchievementToast";
 import AchievementsWidget from "@/components/widgets/AchievementsWidget";
+import Sidebar from "@/components/Sidebar";
+
 
 type WindowApp = {
   id: string;
@@ -32,6 +34,7 @@ export default function Home() {
   const [isBooting, setIsBooting] = useState(true);
   const [openWindows, setOpenWindows] = useState<WindowApp[]>([]);
   const [activeWindow, setActiveWindow] = useState<string | null>(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Notificações
   const [showNotify, setShowNotify] = useState(false);
@@ -70,6 +73,17 @@ export default function Home() {
       setActiveWindow(id);
       return;
     }
+
+    if (id === "system_dashboard") {
+    setIsSidebarOpen(true);
+    triggerNotification("ACESSANDO_PAINEL_DE_CONTROLE...");
+    return;
+  }
+
+  if (openWindows.find((w) => w.id === id)) {
+    setActiveWindow(id);
+    return;
+  }
 
     let title = "";
     let component: React.ReactNode = null;
@@ -188,6 +202,7 @@ export default function Home() {
             </AnimatePresence>
 
             <Dock onSelectItem={openApp} />
+            <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
             <div
               style={{ color: "var(--accent-color)" }}

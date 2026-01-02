@@ -6,7 +6,8 @@ import {
   Terminal as TerminalIcon, 
   Briefcase, 
   MessageSquare, 
-  Trophy
+  Trophy,
+  Settings
 } from "lucide-react";
 import useSound from "use-sound";
 import { useTheme } from "@/context/ThemeContext";
@@ -18,6 +19,7 @@ const menuItems = [
   { id: "terminal", icon: <TerminalIcon size={22} />, label: "Terminal" },
   { id: "contact", icon: <MessageSquare size={22} />, label: "Contato" },
   { id: "achievements", icon: < Trophy  size={22} />, label: "Conquistas" },
+  { id: "system_dashboard", icon: <Settings />, label: "PAINEL" },
 ];
 
 export default function Dock({ onSelectItem }: { onSelectItem: (id: string) => void }) {
@@ -58,15 +60,13 @@ export default function Dock({ onSelectItem }: { onSelectItem: (id: string) => v
             }}
             whileTap={{ scale: 0.9 }}
             onClick={() => handleClick(item.id)}
-            style={{ color: "var(--accent-color)" }}
+            style={{ color: "var(--accent-color)",  }}
             className="relative group p-3 transition-all flex flex-col items-center outline-none"
           >
-            {/* Ícone com brilho no hover */}
             <div className="relative z-10 group-hover:drop-shadow-[0_0_8px_var(--accent-color)] transition-all duration-300">
               {item.icon}
             </div>
 
-            {/* Tooltip Estilizada */}
             <span 
               style={{ 
                 backgroundColor: "var(--accent-color)",
@@ -81,7 +81,6 @@ export default function Dock({ onSelectItem }: { onSelectItem: (id: string) => v
               />
             </span>
 
-            {/* Indicador de Status (Ponto luminoso) */}
             <motion.div 
               style={{ 
                 backgroundColor: "var(--accent-color)",
@@ -90,7 +89,6 @@ export default function Dock({ onSelectItem }: { onSelectItem: (id: string) => v
               className="w-1 h-1 rounded-full mt-1.5 opacity-20 group-hover:opacity-100 transition-all duration-300" 
             />
 
-            {/* Reflexo de fundo no Hover */}
             <div 
               style={{ backgroundColor: "var(--accent-color)" }}
               className="absolute inset-0 opacity-0 group-hover:opacity-5 rounded-xl transition-opacity duration-300"

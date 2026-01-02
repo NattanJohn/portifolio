@@ -18,6 +18,8 @@ export default function TerminalWidget() {
   const { setTheme, theme } = useTheme();
   const [errorCount, setErrorCount] = useState(0);
   const { unlockAchievement } = useAchievements();
+  const [historyIndex, setHistoryIndex] = useState(-1);
+  const [commandHistory, setCommandHistory] = useState<string[]>([]);
 
   const [playPress] = useSound("/sounds/press.mp3", { volume: 0.1 });
   const [playSuccess] = useSound("/sounds/success.wav", { volume: 0.3 });
@@ -28,6 +30,57 @@ export default function TerminalWidget() {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [history]);
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    // --- LÓGICA DE AUTOCOMPLETE (TAB) ---
+    if (e.key === "Tab") {
+      e.preventDefault(); // Impede que o foco saia do terminal
+
+      const availableCommands = [
+        "help",
+        "clear",
+        "sudo",
+        "matrix",
+        "theme matrix",
+        "theme cyberpunk",
+        "social",
+        "destruct",
+        "contact",
+        "npm install",
+        "neofetch",
+        "about",
+        "skills",
+        "ls",
+      ];
+
+      const match = availableCommands.find((cmd) => cmd.startsWith(input));
+      if (match) {
+        setInput(match);
+      }
+    }
+
+    if (e.key === "ArrowUp") {
+      e.preventDefault();
+      if (commandHistory.length > 0) {
+        const newIndex = Math.min(historyIndex + 1, commandHistory.length - 1);
+        setHistoryIndex(newIndex);
+        // O histórico é invertido para que "cima" pegue o mais recente
+        setInput(commandHistory[commandHistory.length - 1 - newIndex]);
+      }
+    }
+
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      if (historyIndex > 0) {
+        const newIndex = historyIndex - 1;
+        setHistoryIndex(newIndex);
+        setInput(commandHistory[commandHistory.length - 1 - newIndex]);
+      } else if (historyIndex === 0) {
+        setHistoryIndex(-1);
+        setInput("");
+      }
+    }
+  };
 
   const processCommand = (cmd: string) => {
     const command = cmd.toLowerCase().trim();
@@ -180,6 +233,14 @@ export default function TerminalWidget() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!input.trim()) return;
+
+    setCommandHistory((prev) => {
+      if (prev[prev.length - 1] === input) return prev;
+      return [...prev, input];
+    });
+
+    setHistoryIndex(-1);
     processCommand(input);
     setInput("");
   };
@@ -227,6 +288,7 @@ export default function TerminalWidget() {
             playPress();
             setInput(e.target.value);
           }}
+          onKeyDown={handleKeyDown}
         />
       </form>
 

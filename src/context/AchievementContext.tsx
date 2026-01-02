@@ -36,7 +36,6 @@ export function AchievementProvider({ children }: { children: React.ReactNode })
     interrupt: true
   });
 
-  // Efeito para carregar as conquistas apenas no lado do cliente (Navegador)
   useEffect(() => {
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("nattan_os_achievements");
