@@ -7,15 +7,32 @@ import {
   ExternalLink, 
   Github, 
   Terminal as TerminalIcon,
-  CheckCircle2 // Ícone novo para as features
+  CheckCircle2 
 } from "lucide-react";
 import { useTheme } from "@/context/ThemeContext";
 import { projects } from "@/data/projects";
+import useSound from "use-sound";
 
 export default function ProjectsWidget() {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const { theme } = useTheme();
+  
+  // --- CONFIGURAÇÃO DE ÁUDIO ---
+  const [playClick] = useSound("/sounds/click.mp3", { volume: 0.4 });
+  const [playBack] = useSound("/sounds/click.mp3", { volume: 0.3, playbackRate: 0.8 });
+  const [playEnter] = useSound("/sounds/click.mp3", { volume: 0.4, playbackRate: 1.2 });
+
   const selectedProject = projects.find((p) => p.id === selectedId);
+
+  const handleSelectProject = (id: string) => {
+    playEnter();
+    setSelectedId(id);
+  };
+
+  const handleGoBack = () => {
+    playBack();
+    setSelectedId(null);
+  };
 
   return (
     <div className="h-full flex flex-col font-mono italic select-none">
@@ -45,7 +62,7 @@ export default function ProjectsWidget() {
               {projects.map((project) => (
                 <button
                   key={project.id}
-                  onClick={() => setSelectedId(project.id)}
+                  onClick={() => handleSelectProject(project.id)}
                   style={{
                     borderColor: "rgba(255,255,255,0.1)",
                     backgroundColor: "rgba(255,255,255,0.02)"
@@ -85,7 +102,7 @@ export default function ProjectsWidget() {
             className="space-y-6 pb-8"
           >
             <button
-              onClick={() => setSelectedId(null)}
+              onClick={handleGoBack}
               style={{ color: "var(--accent-color)" }}
               className="flex items-center gap-2 hover:brightness-150 text-[10px] uppercase font-bold mb-4 transition-all"
             >
@@ -119,7 +136,6 @@ export default function ProjectsWidget() {
             </header>
 
             <div className="space-y-6">
-              {/* DESCRIÇÃO */}
               <div
                 style={{ borderLeftColor: "var(--accent-color)" }}
                 className="bg-white/3 p-4 border-l-2"
@@ -129,7 +145,7 @@ export default function ProjectsWidget() {
                 </p>
               </div>
 
-              {/* FEATURES (NOVA SEÇÃO) */}
+              {/* FEATURES_DO_SISTEMA */}
               {selectedProject?.features && (
                 <div className="space-y-3">
                   <h4
@@ -152,7 +168,7 @@ export default function ProjectsWidget() {
                 </div>
               )}
 
-              {/* CONTRIBUIÇÕES */}
+              {/* PRINCIPAIS_CONTRIBUIÇÕES */}
               <div className="space-y-3">
                 <h4
                   style={{ color: "var(--accent-color)" }}
@@ -179,13 +195,14 @@ export default function ProjectsWidget() {
               </div>
             </div>
 
-            {/* LINKS */}
+            {/* LINKS COM SOM DE CLICK PADRÃO */}
             {(selectedProject?.links?.repo || selectedProject?.links?.live) && (
               <div className="flex gap-6 pt-6 border-t border-white/5">
                 {selectedProject.links.repo && (
                   <a
                     href={selectedProject.links.repo}
                     target="_blank"
+                    onClick={() => playClick()}
                     style={{ color: "var(--accent-color)" }}
                     className="flex items-center gap-2 text-[10px] font-bold hover:brightness-150 transition-all"
                   >
@@ -196,6 +213,7 @@ export default function ProjectsWidget() {
                   <a
                     href={selectedProject.links.live}
                     target="_blank"
+                    onClick={() => playClick()}
                     style={{ color: "var(--accent-color)" }}
                     className="flex items-center gap-2 text-[10px] font-bold hover:brightness-150 transition-all"
                   >

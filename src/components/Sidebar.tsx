@@ -3,14 +3,22 @@ import { motion, AnimatePresence } from "framer-motion";
 import WeatherWidget from "./widgets/WeatherWidget";
 import { X, Cpu, Clock } from "lucide-react";
 import { useEffect, useState } from "react";
+import useSound from "use-sound";
 
 export default function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const [time, setTime] = useState(new Date());
+    const [playClose] = useSound("/sounds/click.mp3", { volume: 0.3, playbackRate: 0.8 });
 
   useEffect(() => {
     const timer = setInterval(() => setTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
+
+  const handleClose = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    playClose();
+    onClose();
+  };
 
   return (
     <AnimatePresence>
@@ -21,24 +29,24 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose:
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/20 backdrop-blur-[2px] z-90"
+            className="fixed inset-0 bg-black/40 backdrop-blur-[2px] z-90"
           />
+
           <motion.div
-            initial={{ x: 400, opacity: 0 }}
+            initial={{ x: -400, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
-            exit={{ x: 400, opacity: 0 }}
+            exit={{ x: -400, opacity: 0 }}
             transition={{ type: "spring", damping: 25, stiffness: 200 }}
-            className="fixed right-0 top-0 h-full w-75 bg-black/60 border-l border-white/10 backdrop-blur-xl z-100 p-6 shadow-2xl"
+            className="fixed left-0 top-0 h-full w-75 bg-black/80 border-r border-white/10 backdrop-blur-xl z-100 p-6 shadow-2xl"
           >
             <button 
               onClick={onClose}
-              className="absolute top-4 left-10px bg-black/60 border border-white/10 p-2 text-white/50 hover:text-(--accent-color) transition-colors"
+              className="absolute top-4 right-4 p-2 text-white/50 hover:text-(--accent-color) hover:bg-white/5 rounded-full transition-all"
             >
-              <X size={20} />
+              <X size={20} onClick={handleClose} />
             </button>
 
-            <div className="space-y-8">
-              {/* Secção: Relógio do Sistema */}
+            <div className="mt-8 space-y-8">
               <div className="space-y-1">
                 <div className="flex items-center gap-2 text-(--accent-color) opacity-70">
                   <Clock size={14} />
@@ -49,7 +57,6 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose:
                 </div>
               </div>
 
-              {/* Secção: Clima (O teu novo Widget) */}
               <div className="space-y-3">
                 <div className="flex items-center gap-2 text-(--accent-color) opacity-70 border-b border-white/5 pb-2">
                   <Cpu size={14} />
@@ -60,7 +67,6 @@ export default function Sidebar({ isOpen, onClose }: { isOpen: boolean; onClose:
                 </div>
               </div>
 
-              {/* Secção: Info de Hardware (Fake) */}
               <div className="p-4 bg-black/40 border-l-2 border-(--accent-color) space-y-2">
                 <p className="text-[9px] text-white/40 uppercase">OS_Kernel: <span className="text-white/80">Nattan_v2.0.4</span></p>
                 <p className="text-[9px] text-white/40 uppercase">Connection: <span className="text-green-500">Encrypted_AES</span></p>
